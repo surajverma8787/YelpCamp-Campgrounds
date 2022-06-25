@@ -33,6 +33,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.get("/", (req, res) => {
     res.render("home.ejs");
 });
+
+//Now making a Campground database
 app.get("/makecampground", async (req, res) => {
     const camp = new Campground({
         title: 'My Backyard',
