@@ -11,38 +11,29 @@ int power(int x, int y, int m)
 {
     if (y == 0)
         return 1;
-
     int p = power(x, y / 2, m) % m;
     p = (p * p) % m;
 
     return (y % 2 == 0) ? p : (x * p) % m;
 }
 int mdinn(int n) { return power(n, mod - 2, mod); }
-int n, m;
-int a[1005][1005];
-bool vis[1005][1005];
-bool ok = false;
-int dx[2] = {0, 1};
-int dy[2] = {1, 0};
-bool check(int x, int y)
+int modInverse(int n,
+               int p)
 {
-    if (x < 0 || y < 0 || x >= n || y >= m)
-        return false;
-    return true;
+    return power(n, p - 2, p);
 }
-void dfs(int x, int y, int sum)
+int nCrModPFermat(int n,
+                  int r, int p)
 {
-    if (x == n - 1 && y == m - 1 && sum == 0)
-    {
-        ok = true;
-        return;
-    }
-    for (int i = 0; i < 2 && !ok; i++)
-    {
-        int xx = x + dx[i], yy = y + dy[i];
-        if (check(xx, yy))
-            dfs(xx, yy, sum + a[xx][yy]);
-    }
+    if (n < r)
+        return 0;
+    if (r == 0)
+        return 1;
+    int fac[n + 1];
+    fac[0] = 1;
+    for (int i = 1; i <= n; i++)
+        fac[i] = (fac[i - 1] * i) % p;
+    return (fac[n] * modInverse(fac[r], p) % p * modInverse(fac[n - r], p) % p) % p;
 }
 signed main()
 {
@@ -51,18 +42,13 @@ signed main()
     cin >> t;
     while (t--)
     {
-
-        cin >> n >> m;
-        ok = false;
-        for (int i = 0; i < n; i++)
+        int n, r;
+        cin >> n >> r;
+        int ans = 0;
+        for (int i = 0; i <= n - r; i++)
         {
-            for (int j = 0; j < m; j++)
-                cin >> a[i][j];
+            ans += nCrModPFermat(n, i, mod);
         }
-        dfs(0, 0, a[0][0]);
-        if (ok)
-            cout << "YES\n";
-        else
-            cout << "NO\n";
+        cout << ans << "\n";
     }
 }
