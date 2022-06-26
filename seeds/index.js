@@ -41,4 +41,6 @@ const seedDB = async () => {
     }
 }
 //Calling the seedDB to update the Database
-seedDB();
+seedDB().then(() => {
+    mongoose.connection.close();
+});

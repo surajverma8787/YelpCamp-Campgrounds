@@ -35,13 +35,9 @@ app.get("/", (req, res) => {
 });
 
 //Now making a Campground database
-app.get("/makecampground", async (req, res) => {
-    const camp = new Campground({
-        title: 'My Backyard',
-        description: 'Cheap Camping'
-    });
-    await camp.save();
-    res.send(camp);
+app.get("/campgrounds", async (req, res) => {
+    const campgrounds = await Campground.find({});
+    res.render("campgrounds/index.ejs", { campgrounds });
 });
 app.listen(3000, () => {
     console.log("Server started on Port 3000");
