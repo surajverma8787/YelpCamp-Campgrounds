@@ -24,9 +24,7 @@ db.once("open", () => {
     console.log("Database Connected");
 });
 
-const randomGenerator = (array) => {
-    array[Math.floor(Math.random() * array.length)];
-}
+const randomGenerator = (array) => array[Math.floor(Math.random() * array.length)];
 //Feeding the Database from the cities.js files
 const seedDB = async () => {
     //deleting the previous stored database
@@ -35,8 +33,8 @@ const seedDB = async () => {
         const randomIndex = Math.floor(Math.random() * 1000);
         const camp = new Campground(
             {
-                location: "${cities[randomIndex].city }, ${ cities[randomIndex].state}",
-                title: "${ randomGenerator(descriptors) }, ${randomGenerator(places)}"
+                location: cities[randomIndex].city,
+                title: randomGenerator(descriptors)
             }
         )
         await camp.save();
