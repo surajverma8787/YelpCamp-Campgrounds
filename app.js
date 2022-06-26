@@ -24,6 +24,9 @@ db.once("open", () => {
     console.log("Database Connected");
 });
 
+//To parse the body data we use urlencoded
+app.use(express.urlencoded({ extended: true }));
+
 // Set View Engine to ejs to use the ejs files.
 app.set('view engine', 'ejs');
 
@@ -39,8 +42,23 @@ app.get("/campgrounds", async (req, res) => {
     const campgrounds = await Campground.find({});
     res.render("campgrounds/index.ejs", { campgrounds });
 });
+
+//Making a new Campgrounds Page that have form to add camp
+app.get("/campgrounds/new", (req, res) => {
+    res.render("campgrounds/new.ejs");
+});
+
+//Handling the Post request of the form
+app.post("/campgrounds", async (req, res) => {
+    const camp = new Campground(req.body.campground);
+    await camp.save();
+    res.redirect("/campgrounds/u{camp._id}");
+})
+
+//Searching a camp via its Id 
 app.get("/campgrounds/:id", async (req, res) => {
     const campground = await Campground.findById(req.params.id);
+    console.log(campground);
     res.render("campgrounds/show.ejs", { campground });
 });
 app.listen(3000, () => {
