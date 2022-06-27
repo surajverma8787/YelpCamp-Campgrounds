@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const path = require('path');
 const mongoose = require("mongoose");
+const methodOverride = require('method-override');
 const Campground = require('./models/campground.js');
 
 //added the useNewUrlParser flag to 
@@ -26,6 +27,7 @@ db.once("open", () => {
 
 //To parse the body data we use urlencoded
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
 
 // Set View Engine to ejs to use the ejs files.
 app.set('view engine', 'ejs');
@@ -59,9 +61,28 @@ app.post("/campgrounds", async (req, res) => {
 //Searching a camp via its Id 
 app.get("/campgrounds/:id", async (req, res) => {
     const campground = await Campground.findById(req.params.id);
-    console.log(campground);
     res.render("campgrounds/show.ejs", { campground });
 });
+
+
+//Request for Editing the Camp
+app.get("/campgrounds/:id/edit", async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    res.render("campgrounds/edit.ejs", { campground });
+});
+
+//Updating the Camp
+app.put("/campgrounds/:id", async (req, res) => {
+    const campground = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
+    res.redirect("/campgrounds/" + campground._id);
+});
+
+//Deleting any Camp
+app.delete("/campgrounds/:id", async (req, res) => {
+    await Campground.findByIdAndDelete(req.params.id);
+    res.redirect("/campgrounds");
+})
+
 app.listen(3000, () => {
     console.log("Server started on Port 3000");
 })
