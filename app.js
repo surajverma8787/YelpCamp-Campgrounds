@@ -52,7 +52,8 @@ app.get("/campgrounds/new", (req, res) => {
 app.post("/campgrounds", async (req, res) => {
     const camp = new Campground(req.body.campground);
     await camp.save();
-    res.redirect("/campgrounds/u{camp._id}");
+    var s = "/campgrounds/" + camp._id;
+    res.redirect(s);
 })
 
 //Searching a camp via its Id 
