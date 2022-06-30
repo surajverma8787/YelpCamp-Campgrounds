@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require("mongoose");
 const methodOverride = require('method-override');
 const Campground = require('./models/campground.js');
+const ejsMate = require('ejs-mate');
 
 //added the useNewUrlParser flag to 
 //allow users to fall back to the old parser if they find a bug in the new parser.
@@ -25,6 +26,8 @@ db.once("open", () => {
     console.log("Database Connected");
 });
 
+//TO use ejs engine
+app.engine('ejs', ejsMate);
 //To parse the body data we use urlencoded
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
