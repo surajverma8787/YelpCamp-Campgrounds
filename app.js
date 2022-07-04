@@ -96,8 +96,8 @@ app.all('*', (req, res, next) => {
     next(new ExpressErrors("Page not Found", 404));
 })
 app.use((err, req, res, next) => {
-    const { statusCode = 500, message = "Error!" } = err;
-    res.status(statusCode).send(message);
+    const { statusCode = 500 } = err;
+    res.status(statusCode).render('error', { err });
 })
 app.listen(3000, () => {
     console.log("Server started on Port 3000");
