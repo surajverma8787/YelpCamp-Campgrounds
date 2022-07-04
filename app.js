@@ -6,6 +6,7 @@ const methodOverride = require('method-override');
 const Campground = require('./models/campground.js');
 const ejsMate = require('ejs-mate');
 const CatchAsync = require("./utils/CatchAsync");
+const ExpressErrors = require("./utils/ExpressError");
 
 
 //added the useNewUrlParser flag to 
@@ -45,7 +46,7 @@ app.get("/", (req, res) => {
 });
 
 //Now making a Campground database
-app.get("/campgrounds", CatchAsync(async (req, res) => {
+app.get("/campgrounds", CatchAsync(async (req, res, next) => {
     const campgrounds = await Campground.find({});
     res.render("campgrounds/index.ejs", { campgrounds });
 }));
@@ -56,7 +57,9 @@ app.get("/campgrounds/new", CatchAsync((req, res, next) => {
 }));
 
 //Handling the Post request of the form
-app.post("/campgrounds", CatchAsync(async (req, res) => {
+app.post("/campgrounds", CatchAsync(async (req, res, next) => {
+    if (!req.body.campground)
+        throw new ExpressErrors('Invalid camp data', 400);
     const camp = new Campground(req.body.campground);
     await camp.save();
     var s = "/campgrounds/" + camp._id;
@@ -64,7 +67,7 @@ app.post("/campgrounds", CatchAsync(async (req, res) => {
 }))
 
 //Searching a camp via its Id 
-app.get("/campgrounds/:id", CatchAsync(async (req, res) => {
+app.get("/campgrounds/:id", CatchAsync(async (req, res, next) => {
     const campground = await Campground.findById(req.params.id);
     res.render("campgrounds/show.ejs", { campground });
 }));
@@ -77,19 +80,24 @@ app.get("/campgrounds/:id/edit", CatchAsync(async (req, res, next) => {
 }));
 
 //Updating the Camp
-app.put("/campgrounds/:id", CatchAsync(async (req, res) => {
+app.put("/campgrounds/:id", CatchAsync(async (req, res, next) => {
     const campground = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
     res.redirect("/campgrounds/" + campground._id);
 }));
 
 //Deleting any Camp
-app.delete("/campgrounds/:id", CatchAsync(async (req, res) => {
+app.delete("/campgrounds/:id", CatchAsync(async (req, res, next) => {
     await Campground.findByIdAndDelete(req.params.id);
     res.redirect("/campgrounds");
 }))
 
+//sending all request for all path the error
+app.all('*', (req, res, next) => {
+    next(new ExpressErrors("Page not Found", 404));
+})
 app.use((err, req, res, next) => {
-    res.send("Error!");
+    const { statusCode = 500, message = "Error!" } = err;
+    res.status(statusCode).send(message);
 })
 app.listen(3000, () => {
     console.log("Server started on Port 3000");
