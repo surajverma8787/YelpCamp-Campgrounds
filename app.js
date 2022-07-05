@@ -7,6 +7,8 @@ const Campground = require('./models/campground.js');
 const ejsMate = require('ejs-mate');
 const CatchAsync = require("./utils/CatchAsync");
 const ExpressErrors = require("./utils/ExpressError");
+const JOI = require('joi');
+const Joi = require("joi");
 
 
 //added the useNewUrlParser flag to 
@@ -58,8 +60,22 @@ app.get("/campgrounds/new", CatchAsync((req, res, next) => {
 
 //Handling the Post request of the form
 app.post("/campgrounds", CatchAsync(async (req, res, next) => {
-    if (!req.body.campground)
-        throw new ExpressErrors('Invalid camp data', 400);
+    // if (!req.body.campground)
+    //     throw new ExpressErrors('Invalid camp data', 400);
+    const campgroundSchema = Joi.object({
+        campground: Joi.object({
+            title: Joi.string().required(),
+            price: Joi.string().required().min(0),
+            image: Joi.string().required(),
+            location: Joi.string().required(),
+            description: Joi.string().required()
+        }).required()
+    })
+    const { error } = campgroundSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',');
+        throw new ExpressErrors(error.details, 400);
+    }
     const camp = new Campground(req.body.campground);
     await camp.save();
     var s = "/campgrounds/" + camp._id;
