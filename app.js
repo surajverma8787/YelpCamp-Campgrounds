@@ -9,6 +9,7 @@ const CatchAsync = require("./utils/CatchAsync");
 const ExpressErrors = require("./utils/ExpressError");
 const JOI = require('joi');
 const { campgroundSchema } = require('./schema.js');
+const Review = require("./models/review")
 
 
 //added the useNewUrlParser flag to 
@@ -105,6 +106,16 @@ app.delete("/campgrounds/:id", CatchAsync(async (req, res, next) => {
     await Campground.findByIdAndDelete(req.params.id);
     res.redirect("/campgrounds");
 }))
+
+//Adding the Reviews
+app.post("/campgrounds/:id/reviews", CatchAsync(async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect("/campgrounds/" + campground._id);
+}));
 
 //sending all request for all path the error
 app.all('*', (req, res, next) => {
