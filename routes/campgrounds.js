@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router({ mergeParams: true });
+const router = express.Router();
 const CatchAsync = require("../utils/CatchAsync");
 const ExpressErrors = require("../utils/ExpressError");
 const { campgroundSchema, validate } = require('../schema.js');
@@ -21,6 +21,10 @@ const validateCampgrounds = (req, res, next) => {
 //Now making a Campground database
 router.get("/", CatchAsync(async (req, res, next) => {
     const campgrounds = await Campground.find({});
+    if (!campground) {
+        req.flash('error', 'Unable to find the campground');
+        return res.redirect("/campgrounds");
+    }
     res.render("campgrounds/index.ejs", { campgrounds });
 }));
 
@@ -65,6 +69,7 @@ router.put("/:id", validateCampgrounds, CatchAsync(async (req, res, next) => {
 //Deleting any Camp
 router.delete("/:id", CatchAsync(async (req, res, next) => {
     await Campground.findByIdAndDelete(req.params.id);
+    req.flash('success', 'Successfully deleted the campground');
     res.redirect("/campgrounds");
 }))
 
