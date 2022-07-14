@@ -21,10 +21,6 @@ const validateCampgrounds = (req, res, next) => {
 //Now making a Campground database
 router.get("/", CatchAsync(async (req, res, next) => {
     const campgrounds = await Campground.find({});
-    if (!campground) {
-        req.flash('error', 'Unable to find the campground');
-        return res.redirect("/campgrounds");
-    }
     res.render("campgrounds/index.ejs", { campgrounds });
 }));
 
@@ -47,6 +43,10 @@ router.post("/", validateCampgrounds, CatchAsync(async (req, res, next) => {
 //Searching a camp via its Id 
 router.get("/:id", CatchAsync(async (req, res, next) => {
     const campground = await Campground.findById(req.params.id).populate("reviews");
+    if (!campground) {
+        req.flash('error', 'Unable to find the campground');
+        return res.redirect("/campgrounds");
+    }
     res.render("campgrounds/show.ejs", { campground });
 }));
 
@@ -54,6 +54,10 @@ router.get("/:id", CatchAsync(async (req, res, next) => {
 //Request for Editing the Camp
 router.get("/:id/edit", CatchAsync(async (req, res, next) => {
     const campground = await Campground.findById(req.params.id);
+    if (!campground) {
+        req.flash('error', 'Unable to find the campground');
+        return res.redirect("/campgrounds");
+    }
     console.log(req.params.id);
     res.render("campgrounds/edit.ejs", { campground });
 }));
