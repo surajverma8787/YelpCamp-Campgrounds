@@ -11,6 +11,7 @@ const JOI = require('joi');
 const { campgroundSchema, reviewSchema } = require('./schema.js');
 const Review = require("./models/review")
 const campgrounds = require("./routes/campgrounds");
+const reviews = require("./routes/reviews");
 
 
 //added the useNewUrlParser flag to 
@@ -46,41 +47,11 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use('/campgrounds', campgrounds);
 
+app.use('/campgrounds/:id/reviews', reviews);
+
 app.get("/", (req, res) => {
     res.render("home.ejs");
 });
-
-//Adding the Validation to Reviews
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressErrors(error.details, 400);
-    }
-    else {
-        next();
-    }
-}
-
-//Adding the Reviews
-app.post("/campgrounds/:id/reviews", validateReview, CatchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    const review = new Review(req.body.review);
-    campground.reviews.push(review);
-    await review.save();
-    await campground.save();
-    res.redirect("/campgrounds/" + campground._id);
-}));
-
-//Deleting the Review
-app.delete("/campgrounds/:id/reviews/:reviewID", CatchAsync(async (req, res) => {
-    //Destructuring
-    console.log("deleted");
-    const { id, reviewID } = req.params;
-    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewID } });
-    await Review.findByIdAndDelete(reviewID);
-    res.redirect("/campgrounds/" + id);
-}))
 
 //sending all request for all path the error
 // app.all('*', (req, res, next) => {
