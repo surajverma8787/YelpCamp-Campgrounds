@@ -7,6 +7,7 @@ const Campground = require('./models/campground.js');
 const ejsMate = require('ejs-mate');
 const CatchAsync = require("./utils/CatchAsync");
 const ExpressErrors = require("./utils/ExpressError");
+const session = require("express-session");
 const JOI = require('joi');
 const { campgroundSchema, reviewSchema } = require('./schema.js');
 const Review = require("./models/review")
@@ -40,6 +41,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
 
+const sessionConfig = {
+    secret: "10thMarch",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 ** 60 * 24 * 7,
+        maxAge: 1000 * 60 ** 60 * 24 * 7
+    }
+}
+app.use(session(sessionConfig));
 
 // Set View Engine to ejs to use the ejs files.
 app.set('view engine', 'ejs');
