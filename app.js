@@ -38,6 +38,8 @@ app.engine('ejs', ejsMate);
 //To parse the body data we use urlencoded
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+app.use(express.static('public'));
+
 
 // Set View Engine to ejs to use the ejs files.
 app.set('view engine', 'ejs');

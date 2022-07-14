@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const CatchAsync = require("../utils/CatchAsync");
 const ExpressErrors = require("../utils/ExpressError");
 const { campgroundSchema } = require('../schema.js');
@@ -46,7 +46,7 @@ router.get("/:id", CatchAsync(async (req, res, next) => {
 
 
 //Request for Editing the Camp
-router.get("/:id/edit", validateCampgrounds, CatchAsync(async (req, res, next) => {
+router.get("/:id/edit", CatchAsync(async (req, res, next) => {
     const campground = await Campground.findById(req.params.id);
     console.log(req.params.id);
     res.render("campgrounds/edit.ejs", { campground });
