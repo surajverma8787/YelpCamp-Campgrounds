@@ -10,6 +10,7 @@ const ExpressErrors = require("./utils/ExpressError");
 const JOI = require('joi');
 const { campgroundSchema, reviewSchema } = require('./schema.js');
 const Review = require("./models/review")
+const campgrounds = require("./routes/campgrounds");
 
 
 //added the useNewUrlParser flag to 
@@ -31,7 +32,6 @@ db.on("error", console.error.bind(console, "connection error"));
 db.once("open", () => {
     console.log("Database Connected");
 });
-
 //TO use ejs engine
 app.engine('ejs', ejsMate);
 //To parse the body data we use urlencoded
@@ -44,18 +44,11 @@ app.set('view engine', 'ejs');
 // join is combining the views directory as public to path.
 app.set('views', path.join(__dirname, 'views'));
 
-//Adding the Validation to certain routes
-const validateCampgrounds = (req, res, next) => {
-    const { error } = campgroundSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressErrors(error.details, 400);
-    }
-    else {
-        next();
-    }
+app.use('/campgrounds', campgrounds);
 
-}
+app.get("/", (req, res) => {
+    res.render("home.ejs");
+});
 
 //Adding the Validation to Reviews
 const validateReview = (req, res, next) => {
@@ -68,56 +61,6 @@ const validateReview = (req, res, next) => {
         next();
     }
 }
-
-app.get("/", (req, res) => {
-    res.render("home.ejs");
-});
-
-//Now making a Campground database
-app.get("/campgrounds", CatchAsync(async (req, res, next) => {
-    const campgrounds = await Campground.find({});
-    res.render("campgrounds/index.ejs", { campgrounds });
-}));
-
-//Making a new Campgrounds Page that have form to add camp
-app.get("/campgrounds/new", CatchAsync((req, res, next) => {
-    res.render("campgrounds/new.ejs");
-}));
-
-//Handling the Post request of the form
-app.post("/campgrounds", validateCampgrounds, CatchAsync(async (req, res, next) => {
-    // if (!req.body.campground)
-    //     throw new ExpressErrors('Invalid camp data', 400);
-    const camp = new Campground(req.body.campground);
-    await camp.save();
-    var s = "/campgrounds/" + camp._id;
-    res.redirect(s);
-}))
-
-//Searching a camp via its Id 
-app.get("/campgrounds/:id", CatchAsync(async (req, res, next) => {
-    const campground = await Campground.findById(req.params.id).populate("reviews");
-    res.render("campgrounds/show.ejs", { campground });
-}));
-
-
-//Request for Editing the Camp
-app.get("/campgrounds/:id/edit", CatchAsync(async (req, res, next) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render("campgrounds/edit.ejs", { campground });
-}));
-
-//Updating the Camp
-app.put("/campgrounds/:id", validateCampgrounds, CatchAsync(async (req, res, next) => {
-    const campground = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
-    res.redirect("/campgrounds/" + campground._id);
-}));
-
-//Deleting any Camp
-app.delete("/campgrounds/:id", CatchAsync(async (req, res, next) => {
-    await Campground.findByIdAndDelete(req.params.id);
-    res.redirect("/campgrounds");
-}))
 
 //Adding the Reviews
 app.post("/campgrounds/:id/reviews", validateReview, CatchAsync(async (req, res) => {
@@ -140,9 +83,9 @@ app.delete("/campgrounds/:id/reviews/:reviewID", CatchAsync(async (req, res) => 
 }))
 
 //sending all request for all path the error
-app.all('*', (req, res, next) => {
-    next(new ExpressErrors("Page not Found", 404));
-})
+// app.all('*', (req, res, next) => {
+//     next(new ExpressErrors("Page not Found", 404));
+// })
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
     res.status(statusCode).render('error', { err });
