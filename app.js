@@ -13,6 +13,7 @@ const { campgroundSchema, reviewSchema } = require('./schema.js');
 const Review = require("./models/review")
 const campgrounds = require("./routes/campgrounds");
 const reviews = require("./routes/reviews");
+const flash = require("connect-flash");
 
 
 //added the useNewUrlParser flag to 
@@ -52,12 +53,19 @@ const sessionConfig = {
     }
 }
 app.use(session(sessionConfig));
+app.use(flash());
 
 // Set View Engine to ejs to use the ejs files.
 app.set('view engine', 'ejs');
 
 // join is combining the views directory as public to path.
 app.set('views', path.join(__dirname, 'views'));
+
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 app.use('/campgrounds', campgrounds);
 

@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const CatchAsync = require("../utils/CatchAsync");
 const ExpressErrors = require("../utils/ExpressError");
-const { campgroundSchema } = require('../schema.js');
+const { campgroundSchema, validate } = require('../schema.js');
 const Campground = require('../models/campground.js');
 const Review = require("../models/review")
+const flash = require("connect-flash");
 
 const validateCampgrounds = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body);
@@ -35,6 +36,7 @@ router.post("/", validateCampgrounds, CatchAsync(async (req, res, next) => {
     const camp = new Campground(req.body.campground);
     await camp.save();
     var s = "/campgrounds/" + camp._id;
+    req.flash('success', 'successfully made a new campground');
     res.redirect(s);
 }))
 
@@ -53,9 +55,10 @@ router.get("/:id/edit", CatchAsync(async (req, res, next) => {
 }));
 
 //Updating the Camp
-router.put("/:id", CatchAsync(async (req, res, next) => {
+router.put("/:id", validateCampgrounds, CatchAsync(async (req, res, next) => {
     console.log(req.body.campground);
     const campground = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
+    req.flash('success', 'successfully updated a new campground');
     res.redirect("/campgrounds/" + campground._id);
 }));
 
