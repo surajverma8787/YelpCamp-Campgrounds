@@ -14,6 +14,9 @@ const Review = require("./models/review")
 const campgrounds = require("./routes/campgrounds");
 const reviews = require("./routes/reviews");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
 
 
 //added the useNewUrlParser flag to 
@@ -54,6 +57,13 @@ const sessionConfig = {
 }
 app.use(session(sessionConfig));
 app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Set View Engine to ejs to use the ejs files.
 app.set('view engine', 'ejs');
