@@ -209,6 +209,11 @@ exports.applyPaths = function applyPaths(fields, schema) {
       // user didn't specify fields, implies returning all fields.
       // only need to apply excluded fields and delete any plus paths
       for (const fieldName of excluded) {
+        if (fields[fieldName] != null) {
+          // Skip applying default projections to fields with non-defining
+          // projections, like `$slice`
+          continue;
+        }
         fields[fieldName] = 0;
       }
       break;
@@ -226,7 +231,9 @@ exports.applyPaths = function applyPaths(fields, schema) {
     const addedPaths = [];
     schema.eachPath(function(path, type) {
       if (prefix) path = prefix + '.' + path;
-
+      if (type.$isSchemaMap || path.endsWith('.$*')) {
+        return;
+      }
       let addedPath = analyzePath(path, type);
       // arrays
       if (addedPath == null && !Array.isArray(type) && type.$isMongooseArray && !type.$isMongooseDocumentArray) {
@@ -248,7 +255,6 @@ exports.applyPaths = function applyPaths(fields, schema) {
         }
       }
     });
-
     stack.pop();
     return addedPaths;
   }
