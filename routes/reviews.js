@@ -5,7 +5,7 @@ const ExpressErrors = require("../utils/ExpressError");
 const { campgroundSchema, reviewSchema } = require('../schema.js');
 const Campground = require('../models/campground.js');
 const Review = require("../models/review")
-const { validateReview, isLoggedin } = require("../Middleware");
+const { validateReview, isLoggedin, isReviewAuthor } = require("../Middleware");
 
 
 //Adding the Reviews
@@ -21,7 +21,7 @@ router.post("/", isLoggedin, validateReview, CatchAsync(async (req, res) => {
 }));
 
 //Deleting the Review
-router.delete("/:reviewID", isLoggedin, CatchAsync(async (req, res) => {
+router.delete("/:reviewID", isLoggedin, isReviewAuthor, CatchAsync(async (req, res) => {
     //Destructuring
     console.log("deleted");
     const { id, reviewID } = req.params;
