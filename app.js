@@ -11,8 +11,9 @@ const session = require("express-session");
 const JOI = require('joi');
 const { campgroundSchema, reviewSchema } = require('./schema.js');
 const Review = require("./models/review")
-const campgrounds = require("./routes/campgrounds");
-const reviews = require("./routes/reviews");
+const userRoutes = require("./routes/user")
+const campgroundsRoutes = require("./routes/campgrounds");
+const reviewsRoutes = require("./routes/reviews");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -77,9 +78,10 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/campgrounds', campgrounds);
+app.use("/", userRoutes);
+app.use('/campgrounds', campgroundsRoutes);
 
-app.use('/campgrounds/:id/reviews', reviews);
+app.use('/campgrounds/:id/reviews', reviewsRoutes);
 
 app.get("/", (req, res) => {
     res.render("home.ejs");
