@@ -5,18 +5,8 @@ const ExpressErrors = require("../utils/ExpressError");
 const { campgroundSchema, reviewSchema } = require('../schema.js');
 const Campground = require('../models/campground.js');
 const Review = require("../models/review")
+const { validateReview } = require("../Middleware");
 
-//Adding the Validation to Reviews
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressErrors(error.details, 400);
-    }
-    else {
-        next();
-    }
-}
 
 //Adding the Reviews
 router.post("/", validateReview, CatchAsync(async (req, res) => {
