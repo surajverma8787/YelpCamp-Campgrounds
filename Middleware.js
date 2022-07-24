@@ -2,6 +2,7 @@ const { campgroundSchema, validate } = require('./schema.js');
 const ExpressErrors = require("./utils/ExpressError");
 const Campground = require('./models/campground.js');
 const Review = require("./models/review");
+const { reviewSchema } = require('./schema.js');
 
 module.exports.isLoggedin = (req, res, next) => {
     if (!req.isAuthenticated()) {
