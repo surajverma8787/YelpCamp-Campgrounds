@@ -7,6 +7,7 @@ const Campground = require('../models/campground.js');
 const Review = require("../models/review")
 const flash = require("connect-flash");
 const { isLoggedin } = require("../Middleware");
+const campground = require("../models/campground.js");
 
 const validateCampgrounds = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body);
@@ -36,6 +37,7 @@ router.post("/", isLoggedin, validateCampgrounds, CatchAsync(async (req, res, ne
     // if (!req.body.campground)
     //     throw new ExpressErrors('Invalid camp data', 400);
     const camp = new Campground(req.body.campground);
+    camp.author = req.user._id;
     await camp.save();
     var s = "/campgrounds/" + camp._id;
     req.flash('success', 'successfully made a new campground');
@@ -44,7 +46,7 @@ router.post("/", isLoggedin, validateCampgrounds, CatchAsync(async (req, res, ne
 
 //Searching a camp via its Id 
 router.get("/:id", isLoggedin, CatchAsync(async (req, res, next) => {
-    const campground = await Campground.findById(req.params.id).populate("reviews");
+    const campground = await Campground.findById(req.params.id).populate("reviews").populate('author');
     if (!campground) {
         req.flash('error', 'Unable to find the campground');
         return res.redirect("/campgrounds");
