@@ -62,20 +62,36 @@ router.get("/:id/edit", CatchAsync(async (req, res, next) => {
         req.flash('error', 'Unable to find the campground');
         return res.redirect("/campgrounds");
     }
+    if (!campground.author.equals(req.user._id)) {
+        req.flash('error', 'Permission Required By Author For Changes');
+        return res.redirect('/campgrounds/' + req.params.id);
+    }
     console.log(req.params.id);
     res.render("campgrounds/edit.ejs", { campground });
 }));
 
 //Updating the Camp
 router.put("/:id", validateCampgrounds, CatchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const campground = await Campground.findById(id);
+    if (!campground.author.equals(req.user._id)) {
+        req.flash('error', 'Permission Required By Author For Changes');
+        return res.redirect('/campgrounds/' + id);
+    }
     console.log(req.body.campground);
-    const campground = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
+    const camp = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
     req.flash('success', 'successfully updated a new campground');
-    res.redirect("/campgrounds/" + campground._id);
+    res.redirect("/campgrounds/" + camp._id);
 }));
 
 //Deleting any Camp
 router.delete("/:id", CatchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const campground = await Campground.findById(id);
+    if (!campground.author.equals(req.user._id)) {
+        req.flash('error', 'Permission Required By Author For Changes');
+        return res.redirect('/campgrounds/' + id);
+    }
     await Campground.findByIdAndDelete(req.params.id);
     req.flash('success', 'Successfully deleted the campground');
     res.redirect("/campgrounds");
