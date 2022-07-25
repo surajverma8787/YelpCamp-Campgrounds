@@ -6,13 +6,13 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const users = require("../controllers/users");
 
-router.get('/register', (users.renderRegister));
+router.route("/register")
+    .get((users.renderRegister))
+    .post(CatchAsync(users.Register));
 
-router.post('/register', CatchAsync(users.Register));
-
-router.get("/login", (users.renderLogin));
-
-router.post("/login", passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), users.Login);
+router.route('/login')
+    .get((users.renderLogin))
+    .post(passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), users.Login);
 
 router.get("/logout", (users.Logout));
 

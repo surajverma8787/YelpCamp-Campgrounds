@@ -9,28 +9,22 @@ const flash = require("connect-flash");
 const { isLoggedin, isAuthor, validateCampgrounds, validateReview } = require("../Middleware");
 const campground = require("../models/campground.js");
 const campgrounds = require('../controllers/campgrounds');
+const { route } = require("./user");
 
-//Now making a Campground database
-router.get("/", CatchAsync(campgrounds.index));
+
+router.route('/')
+    .get(CatchAsync(campgrounds.index))
+    .post(isLoggedin, validateCampgrounds, CatchAsync(campgrounds.createCampground));
 
 //Making a new Campgrounds Page that have form to add camp
 router.get("/new", isLoggedin, CatchAsync(campgrounds.renderNewForm));
 
-//Handling the Post request of the form
-router.post("/", isLoggedin, validateCampgrounds, CatchAsync(campgrounds.createCampground));
+router.route('/:id')
+    .get(CatchAsync(campgrounds.showCampground))
+    .put(validateCampgrounds, isLoggedin, isAuthor, CatchAsync(campgrounds.updateCampground))
+    .delete(isLoggedin, isAuthor, CatchAsync(campgrounds.deleteCampground));
 
-//Searching a camp via its Id 
-router.get("/:id", CatchAsync(campgrounds.showCampground));
-
-
-//Request for Editing the Camp
 router.get("/:id/edit", isLoggedin, isAuthor, CatchAsync(campgrounds.renderEditForm));
-
-//Updating the Camp
-router.put("/:id", validateCampgrounds, isLoggedin, isAuthor, CatchAsync(campgrounds.updateCampground));
-
-//Deleting any Camp
-router.delete("/:id", isLoggedin, isAuthor, CatchAsync(campgrounds.deleteCampground))
 
 
 module.exports = router;
