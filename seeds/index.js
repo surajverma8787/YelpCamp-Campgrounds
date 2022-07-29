@@ -37,9 +37,30 @@ const seedDB = async () => {
                 author: "62dd5a9034bb78083baaa2d3",
                 location: cities[randomIndex].city,
                 title: randomGenerator(descriptors),
-                image: "https://source.unsplash.com/collection/483251",
                 description: "cool",
-                price: price
+                price: price,
+                images: [
+                    {
+                        url: 'https://res.cloudinary.com/dhpmbblsw/image/upload/v1659127708/YelpCamp/xocga4mehalttwbmvoou.webp',
+                        filename: 'YelpCamp/xocga4mehalttwbmvoou',
+                    },
+                    {
+                        url: 'https://res.cloudinary.com/dhpmbblsw/image/upload/v1659127709/YelpCamp/jdxmbevhwgksfavubkeu.jpg',
+                        filename: 'YelpCamp/jdxmbevhwgksfavubkeu',
+                    },
+                    {
+                        url: 'https://res.cloudinary.com/dhpmbblsw/image/upload/v1659127709/YelpCamp/yumiztp5outbi1121gof.jpg',
+                        filename: 'YelpCamp/yumiztp5outbi1121gof',
+                    },
+                    {
+                        url: 'https://res.cloudinary.com/dhpmbblsw/image/upload/v1659127709/YelpCamp/yteb0d2e7sr4mvk5r7zo.jpg',
+                        filename: 'YelpCamp/yteb0d2e7sr4mvk5r7zo',
+                    },
+                    {
+                        url: 'https://res.cloudinary.com/dhpmbblsw/image/upload/v1659127709/YelpCamp/avm5nfpn9oq0n3ez7ayg.jpg',
+                        filename: 'YelpCamp/avm5nfpn9oq0n3ez7ayg',
+                    }
+                ]
             }
         )
         await camp.save();
