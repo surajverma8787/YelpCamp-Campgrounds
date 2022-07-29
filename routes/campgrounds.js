@@ -10,11 +10,16 @@ const { isLoggedin, isAuthor, validateCampgrounds, validateReview } = require(".
 const campground = require("../models/campground.js");
 const campgrounds = require('../controllers/campgrounds');
 const { route } = require("./user");
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 
 router.route('/')
     .get(CatchAsync(campgrounds.index))
-    .post(isLoggedin, validateCampgrounds, CatchAsync(campgrounds.createCampground));
+    // .post(isLoggedin, validateCampgrounds, CatchAsync(campgrounds.createCampground));
+    .post(upload.array('image'), (req, res) => {
+        res.send(req.body, req.files);
+    })
 
 //Making a new Campgrounds Page that have form to add camp
 router.get("/new", isLoggedin, CatchAsync(campgrounds.renderNewForm));

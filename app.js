@@ -18,6 +18,8 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 
 //added the useNewUrlParser flag to 
@@ -96,6 +98,6 @@ app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
     res.status(statusCode).render('error', { err });
 })
-app.listen(3000, () => {
-    console.log("Server started on Port 3000");
+app.listen(3500, () => {
+    console.log("Server started on Port 3500");
 })
