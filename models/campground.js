@@ -15,6 +15,17 @@ const CampgroundSchema = new Schema({
     //https://res.cloudinary.com/dhpmbblsw/image/upload/v1659190846/YelpCamp/xsa5edrz4ydy586km8jo.jpg
     title: String,
     images: [ImageSchema],
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     price: Number,
     description: String,
     location: String,
