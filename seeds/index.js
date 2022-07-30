@@ -29,7 +29,7 @@ const randomGenerator = (array) => array[Math.floor(Math.random() * array.length
 const seedDB = async () => {
     //deleting the previous stored database
     await Campground.deleteMany({});
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 200; i++) {
         const randomIndex = Math.floor(Math.random() * 1000);
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground(
