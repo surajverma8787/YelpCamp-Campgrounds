@@ -16,6 +16,7 @@ module.exports.isLoggedin = (req, res, next) => {
 module.exports.validateCampgrounds = (req, res, next) => {
     const { error } = campgroundSchema.validate(req.body);
     if (error) {
+        console.log(error);
         const msg = error.details.map(el => el.message).join(',');
         throw new ExpressErrors(error.details, 400);
     }

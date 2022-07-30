@@ -1,3 +1,4 @@
+const campground = require('../models/campground.js');
 const Campground = require('../models/campground.js');
 
 module.exports.index = async (req, res, next) => {
@@ -43,14 +44,15 @@ module.exports.renderEditForm = async (req, res, next) => {
         req.flash('error', 'Unable to find the campground');
         return res.redirect("/campgrounds");
     }
-    console.log(req.params.id);
     res.render("campgrounds/edit.ejs", { campground });
 }
 
 module.exports.updateCampground = async (req, res, next) => {
     const { id } = req.params;
-    console.log(req.body.campground);
     const camp = await Campground.findByIdAndUpdate(req.params.id, { ...req.body.campground });
+    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    camp.images.push(...imgs);
+    await camp.save();
     req.flash('success', 'successfully updated a new campground');
     res.redirect("/campgrounds/" + camp._id);
 }
