@@ -39,7 +39,11 @@ const seedDB = async () => {
                 title: randomGenerator(descriptors),
                 description: "cool",
                 price: price,
-                geometry: { type: 'Point', coordinates: [-122.330062, 47.603832] },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [cities[randomIndex].longitude,
+                    cities[randomIndex].latitude]
+                },
                 images: [
                     {
                         url: 'https://res.cloudinary.com/dhpmbblsw/image/upload/v1659127708/YelpCamp/xocga4mehalttwbmvoou.webp',
